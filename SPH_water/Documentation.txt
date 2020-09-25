@@ -1,0 +1,137 @@
+Documentation
+SPH - Forward Euler
+
+class name: SPH_particle
+	/// store position and velocity
+	double x[4], v[4];
+
+	/// store acceleration
+	double a[2]; 
+	
+	/// store density and pressur
+	double rho[2], P;
+
+	/// density derivative
+	double drho;  
+
+	/// boolean, if true particle is part of fluid
+	bool fluid = true;              //determine whether it is a fluid/boundary
+
+	/// link to SPH_main class so that it can be used in calc_index
+	static SPH_main *main_data;		//link to SPH_main class so that it can be used in calc_index
+
+	///index in neighbour finding array
+	int list_num[2];				
+
+/// put step = 1 for half step values
+	void calc_index(int step); // put step = 1 for half step values
+
+	Methods:
+	void calc_index();
+	Calculates index of the particle on the grid
+
+
+class name: SPH_main
+
+
+	void set_values(double length, double height, double dx_in);
+	Initializes values of the simulation
+	inputs:
+		length: double
+			max length of the boundary
+		height: double
+			max height of the boundary
+		dx_in: double
+			initial spacing of the particles
+
+
+	void initialise_grid(void);
+	Initializes the grid
+	inputs:
+		void
+
+
+	void initialise_domain(double length, double height, double depth, double src_length, double src_height);
+	Initialize all the particles in domain
+	inputs:
+		length: double
+			max length of the boundary
+		height: double
+			max height of the boundary
+		depth: double
+			depth of the water
+		src_length: double
+			source length
+		src_height: double
+			source height
+
+
+
+	void add_point(double x, double y, bool fluid_in)
+	Create a particle (fluid/boundary) at the location x, y
+		x: double
+			coordinate in horizontal direction
+		y: double
+			coordinate in vertical direction
+		fluid_in bool
+			fluid boundary
+
+	void check_overlap()
+	Check if particles overlap, called once
+
+	double distance(SPH_particle* part, SPH_particle* other_part)
+	calculate distance between two particles
+	inputs:
+		part: SPH_particle object pointer
+			particle one 
+		other_part SPH_particle object pointer
+			particle two
+
+	outputs: double
+		distance between particle one and particle two
+
+
+	void allocate_to_grid()	
+	allocates all the points to the search grid (assumes that index has been appropriately updated)
+	needs to be called each time that all the particles have their positions updated
+
+	double find_new_dt(double c_cfl)
+	find new time step dynamically
+	inputs:
+		c_cfl: double
+			starting guess
+
+	void neighbour_iterate(SPH_particle* part)
+	iterate through neighbors to calculate acceleration and derivative of density
+	inputs:
+		part: SPH_particle pointer
+			particle where neighbors are to be iterated
+
+	void time_stepping(double dt, double final_t, double c_cfl)
+	Implement forward euler method to update values of x, v, rho and P
+	inputs:
+		dt:double
+			time step
+		final_t : double
+			last time step
+		c_cfl :double
+			guess for dynamic dt
+
+	double trait_eq(double rho)
+	calculate the pressure from density
+	inputs:
+		rho: double
+		 	density
+	returns: 
+	double : pressure
+
+
+
+
+	file_writer.h
+
+	int write_file(filename)
+	writes to file
+	input:
+		filename : constant character pointer
+			name of file to be written
