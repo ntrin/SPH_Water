@@ -1,2 +1,2 @@
 # SPH_Water
-Simulate Water Molecule Wave
+C++ project using Smooth Particle Hydrodynamics to a water wave.
